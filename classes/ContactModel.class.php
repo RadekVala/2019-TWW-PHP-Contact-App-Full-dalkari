@@ -109,6 +109,10 @@ class Contact {
 
         switch ($strName) {
     
+            case 'Id':
+                return $this->id;
+                break;
+
             case 'Name':
                 return $this->name;
                 break;

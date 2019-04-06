@@ -1,8 +1,15 @@
 <?php
-
+session_start();
 require('classes/Database.class.php');
 require('classes/ContactModel.class.php');
+require('classes/Auth.class.php');
 
+$authenticated = MyAuth::isAuth();
+//Nactu kontakt dle id=1
+//$Contact1 = Contact::Load(1);
+//$Contact1->Name = 'Emil';
+//$Contact1->Save();
+//print_r($Contact1->Name); 
 
 //vytvori novou instanci tridy Contact
 //$Contact = new Contact();
@@ -31,7 +38,7 @@ $allContacts = Contact::LoadAll();
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-
+<?php if($authenticated) { ?>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="#">Contact APP</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +51,7 @@ $allContacts = Contact::LoadAll();
         <a class="nav-link" href="#">Contact list <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Create New</a>
+        <a class="nav-link" href="create.php">Create New</a>
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -56,10 +63,38 @@ $allContacts = Contact::LoadAll();
 
     <ul class="list-group">
     <?php foreach($allContacts as $Con){ ?>
-        <li class="list-group-item clearfix"><?php echo $Con->Id; ?><br ><?php echo $Con->Surname; ?> <?php echo $Con->Name; ?> <a class="btn btn-danger float-right" href="#" role="button">Delete</a></li>
+        <li class="list-group-item clearfix">
+          <?php echo $Con->Id; ?><br ><?php echo $Con->Surname; ?> <?php echo $Con->Name; ?> 
+          <form class="float-right" action="process.php" method="post">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<?php echo $Con->Id; ?>">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </li>
     </ul>
     <?php } ?>
       
+    <?php } else { ?>
+  
+      <div class="container">
+        <form method="post" action="process.php">
+          <input type="hidden" name="action" value="auth">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text"
+              class="form-control" name="username" id="username" placeholder="">
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password"
+              class="form-control" name="password" id="password" placeholder="">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+
+    <?php } ?>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
